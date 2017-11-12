@@ -445,14 +445,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#dao">Data Access Object (DAO)</a></li>
 <li><a href="#database">Configure your database</a></li>
 <li><a href="#">Create and Test your first DAO</a></li>
-<li><a href="#others-dao">Continue to develop other Entities and DAO</a></li>
+<li><a href="#others-dao">Develop other Entities and DAO</a></li>
 </ul>
 </li>
 <li><a href="#web">Web Development</a>
 <ul class="sectlevel2">
 <li><a href="#">Data Transfer Object (DTO)</a></li>
 <li><a href="#">Simple Controller</a></li>
-<li><a href="#">your first view</a></li>
+<li><a href="#">CORS Filter</a></li>
 </ul>
 </li>
 <li><a href="#deployment-cloud">Deploy your app on a Cloud platform</a></li>
@@ -1395,7 +1395,7 @@ public List&lt;Light&gt; findOnLights();
 </div>
 <div class="paragraph">
 <p>Following the TDD (<a href="https://en.wikipedia.org/wiki/Test-driven_development">Test Driven Development</a> approach, write your test for your <code>LightDaoCustom</code> component.
-We&#8217;re going to use a dedicated library to test Dao : <a href="http://dbsetup.ninja-squad.com/">DBSetup</a> (open source).</p>
+We&#8217;re going to use a dedicated library to test Dao : <a href="http://dbsetup.ninja-squad.com/">DBSetup</a> (open source lib proudly powered by <a href="http://www.ninja-squad.com/">Ninja Squad</a> &#9829;).</p>
 </div>
 <div class="paragraph">
 <p>Add this to the <code>dependencies</code> section of your <code>build.gradle</code> file:</p>
@@ -1478,13 +1478,25 @@ public class LightDaoCustomTest {
 </div>
 </div>
 <div class="sect2">
-<h3 id="others-dao"><a class="anchor" href="#others-dao"></a>Continue to develop other Entities and DAO</h3>
+<h3 id="others-dao"><a class="anchor" href="#others-dao"></a>Develop other Entities and DAO</h3>
 <div class="paragraph">
-<p>You have to test and develop :
-- Noise Entity (same attributes of Light)
-- Room Entity composes by 2 attributes : Light and Noise
-- NoiseDAO
-- RoomDAO</p>
+<p>You have to test and develop :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Noise Entity (same attributes of Light)</p>
+</li>
+<li>
+<p>Room Entity composes by 2 attributes : Light and Noise</p>
+</li>
+<li>
+<p>NoiseDAO</p>
+</li>
+<li>
+<p>RoomDAO</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>For the Room Entity, be carefull to use the right Object-Relational Mapping :</p>
@@ -1607,20 +1619,72 @@ public class RoomController {
 </div>
 </div>
 <div class="sect2">
-<h3>your first view</h3>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-you have to active the Chrome extension <em>Allow-Control-Allow-Origin</em> or the FireFox module <em>Cross Domain CORS</em>
-The error message in your browser should be :
-"XMLHttpRequest cannot load <a href="http://localhost:8080/api/rooms" class="bare">http://localhost:8080/api/rooms</a>. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'null' is therefore not allowed acces"
-</td>
-</tr>
-</table>
+<h3>CORS Filter</h3>
+<div class="paragraph">
+<p>Add this filter in your project (under the web package).
+This CORS Filter is a generic solution for fitting Cross-Origin Resource Sharing (CORS) support to your application.
+CORS is a W3C standard for enabling cross-domain requests from web browsers to servers and web APIs that opt in to handle them.</p>
+</div>
+<div class="paragraph">
+<p>When web have REST wevservices, we use generally the javascript method <em>XMLHttpRequest (XHR)</em> implemented bu your browser.
+In order to ensure the security, a lot of browsers forbid the “cross-domain” requests, in order to avoid XSRF attacks (Cross-site request forgery).</p>
+</div>
+<div class="paragraph">
+<p>The <em>Cross-origin resource sharing</em> (CORS) allows to resolve the problem (under normalization by the W3C).
+CORS allows a server to relax the same-origin policy.
+Using CORS, a server can explicitly allow some cross-origin requests while rejecting others.
+CORS is safer and more flexible than earlier techniques such as JSONP.</p>
+</div>
+<div class="paragraph">
+<p>The approach of CORS i to add informations is the HTTP Headers.</p>
+</div>
+<div class="listingblock">
+<div class="title">SimpleCORSFilter.java</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">package fr.emse.majeureinfo.springbootintro.web;
+
+import java.io.IOException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+
+@Component
+@WebFilter(value = "/*")
+public class SimpleCORSFilter implements Filter {
+
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+
+        HttpServletResponse response = (HttpServletResponse) res;
+        HttpServletRequest request = (HttpServletRequest) req;
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Headers", "Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization");
+        if(request.getMethod().equals(HttpMethod.OPTIONS.name())){
+            response.setStatus(HttpStatus.NO_CONTENT.value());
+        }else{
+            chain.doFilter(req, res);
+        }
+    }
+
+    public void init(FilterConfig filterConfig) {}
+
+    public void destroy() {}
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -1754,7 +1818,7 @@ For Spring Boot, it will run <code>./gradlew build -x test</code></p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-11-10 14:02:46 CET
+Last updated 2017-11-12 20:00:09 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
