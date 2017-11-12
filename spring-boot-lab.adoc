@@ -1,17 +1,15 @@
-= Introduction to Spring Boot
+= Spring Boot Lab
 :revremark: Creative Commons BY-NC-SA 4.0 International License
 :sectids!:
 :sectanchors: true
 :source-highlighter: prettify
 :page-layout: course
-:page-permalink: /spring/
- :icons: font
+:page-permalink: /spring
+:icons: font
 :toc:
 :spring-boot-version: 1.5.7.RELEASE
 :spring-framework-version: 5.0.0.RELEASE
 :group-id: fr.emse.majeureinfo
-
-Agnes Crepet <agnes@ninja-squad.com> <agnes.crepet@emse.fr> based on Brian Clozel <bclozel@pivotal.io> tutorial
 
 [[introduction]]
 == Introduction
