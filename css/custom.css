@@ -1,0 +1,14 @@
+header.masthead .site-heading {
+  color: #444;
+}
+header.masthead .page-heading  {
+  color: #444;
+}
+header.masthead .site-heading .subheading{
+  font-size: 34px;
+  font-weight: 500;
+}
+header.masthead .page-heading .subheading{
+  font-size: 34px;
+  font-weight: 500;
+}
