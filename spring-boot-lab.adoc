@@ -1,18 +1,15 @@
 = Introduction to Spring Boot
+Agnes Crepet <agnes@ninja-squad.com> <agnes.crepet@emse.fr>
+based on Brian Clozel <bclozel@pivotal.io> tutorial
 :revremark: Creative Commons BY-NC-SA 4.0 International License
 :sectids!:
 :sectanchors: true
 :source-highlighter: prettify
-:page-layout: course
-:page-permalink: /spring/
 :icons: font
 :toc:
 :spring-boot-version: 1.5.7.RELEASE
 :spring-framework-version: 5.0.0.RELEASE
 :group-id: fr.emse.majeureinfo
-
-Agnes Crepet <agnes@ninja-squad.com> <agnes.crepet@emse.fr>
-based on Brian Clozel <bclozel@pivotal.io> tutorial
 
 [[introduction]]
 == Introduction
@@ -20,19 +17,24 @@ based on Brian Clozel <bclozel@pivotal.io> tutorial
 https://projects.spring.io/spring-framework[Spring Framework] is a popular, open-source, Java-based application framework
 - it's well known for its flexibility and its rich ecosystem. Many other projects are in the Spring Platform, for
 big data, batch workloads, storing data, securing applications, and more!
+Spring based applications have a lot of configuration.
 
 https://projects.spring.io/spring-framework[Spring Boot] takes an opinionated view of the Spring platform and third-party
-libraries. With Boot, it's easy to create production-grade Spring based applications for all types of workloads
+libraries. With Spring Boot, it's easy to create production-grade Spring based applications for all types of workloads
 Most Spring Boot applications need very little Spring configuration. Spring Boot is a "convention over configuration"
 type of framework, with no code generation.
 
-TIP: During the whole lab, you'll find :
+When we use https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html[Spring MVC] (the original web framework built on the Servlet API) for example, we need to configure for example the dispatcher servlet among other things.
+When we use the Spring support of Hibernate/JPA, we would need to configure a datasource, an entity manager factory, a transaction manager...
+Spring Boot simplifies all of these configuration elements, by auto-configuration.
+For example, when it sees spring-webmvc on the classpath, Spring Boot adds automatically `@EnableWebMvc` on your context.
 
-* the Spring Boot http://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference/htmlsingle/[reference documentation] and the
+
+TIP: During the whole lab, you'll find the Spring Boot
+http://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference/htmlsingle/[reference documentation] /
 http://docs.spring.io/spring-boot/docs/{spring-boot-version}/api/[javadoc API]
-
-* and the Spring Framework
-http://docs.spring.io/spring-framework/docs/{spring-framework-version}/spring-framework-reference/html/[reference documentation] and the
+and the Spring Framework
+http://docs.spring.io/spring-framework/docs/{spring-framework-version}/spring-framework-reference/html/[reference documentation] /
 http://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api/[javadoc API]
 quite useful.
 
@@ -137,6 +139,8 @@ No message available
 Don't panic : since we've defined no web endpoint, Spring answers with a custom HTTP 404 error message...
 We're going to uderstand what happened
 
+TIP: You could have an error about the database configuration. Once again don't panic : just comment this line in your `build.gradle` file  : `// compile('org.springframework.boot:spring-boot-starter-data-jpa'`
+
 [[anatomy-app]]
 == Anatomy of a Spring Boot application
 
@@ -183,14 +187,23 @@ public class SpringBootIntroApplication {
 ----
 <1> This annotation triggers the scanning for Spring beans + auto-configuration of our application
 <2> You can start this application by just running the "main" method...
-<3> ... which in turn runs our application using its main configuration class
+<3> ... Spring Boot’s `SpringApplication.run()` method lets launch your application.
 
-The next section explains the concept of Dependency Injection - you'll start writing code in the
-<<using-di>> section.
+Did you notice that there wasn’t a single line of XML? No web.xml file either. This web application is 100% pure Java and you didn’t have to deal with configuring any plumbing or infrastructure.
+
+As said above, `@SpringBootApplication` is a convenience annotation that adds auto-configuration, in fact that adds all of the following:
+
+- `@Configuration` tags the class as a source of bean definitions for the application context.
+- `@EnableAutoConfiguration` tells Spring Boot to start adding beans based on classpath settings, other beans, and various property settings.
+- Normally you would add `@EnableWebMvc` for a Spring MVC app, but Spring Boot adds it automatically when it sees spring-webmvc on the classpath. This flags the application as a web application and activates key behaviors such as setting up a DispatcherServlet.
+- `@ComponentScan` tells Spring to look for other components, configurations, and services in the `springbootintro` package, allowing it to find the controllers.
 
 
 [[dependency-injection]]
 == Dependency Injection
+
+This section explains the concept of Dependency Injection - you'll start writing code in the
+<<using-di>> section.
 
 When writing an application, as developers, we break the problem we're trying to solve into smaller ones
 and do our best keep in line with the architecture and design principles we've chosen for our application:
@@ -292,7 +305,7 @@ libraries you're using - so you can focus on your application code and not the b
 
 First, let's create an interface for our application `src/main/java/fr/emse/majeureinfo/springbootintro/hello/GreetingService.java`
 
-[source, java]
+[source, java, title="GreetingService.java"]
 ----
 package fr.emse.majeureinfo.springbootintro.hello;
 
@@ -302,13 +315,21 @@ public interface GreetingService {
 }
 ----
 
+TIP: Good habits fall to the wayside ;-( Don't forget to commit periodically your work. For this, you have run the `git init` cmd to convert an existing, unversioned project to a Git repo.
+
+
 Your first job is to output "Hello, Spring!" in the console as the application starts.
 For that, do the following:
 
-Create a `ConsoleGreetingService` implementation of that interface (`src/test/java/fr/emse/majeureinfo/springbootintro/hello/ConsoleGreetingServiceTests.java`) and mark is as a component.
+Create a `src/main/java/fr/emse/majeureinfo/springbootintro/hello/ConsoleGreetingService.java` implementation of that interface, and mark is as a component.
 The implementation of the `greet` method should write to the console using System.out.println.
 
-[source, java]
+You can verify that your implementation is working properly by running the following test
+with the `./gradlew test` command.
+
+Add this test, `src/test/java/fr/emse/majeureinfo/springbootintro/hello/ConsoleGreetingServiceTests.java`, in the src/test folder of your application
+
+[source, java, title="ConsoleGreetingServiceTests.java"]
 ----
 package fr.emse.majeureinfo.springbootintro.hello;
 
@@ -333,14 +354,12 @@ public class ConsoleGreetingServiceTests {
 ----
 <1> We're testing our service implementation without Spring being involved
 
-You can verify that your implementation is working properly by running the following test
-with the `./gradlew test` command.
 
 Now, in the `SpringBootIntroApplication` class, add a new method that returns a `CommandLineRunner`.
 `CommandLineRunner` instances are found by Spring Boot in the Spring context and are executed
 during the application startup phase.
 
-[source, java, title="src/main/java/fr/emse/majeureinfo/springbootintro/SpringBootIntroApplication.java"]
+[source, java, title="SpringBootIntroApplication.java"]
 ----
 // inside the existing class, add this method
 // import org.springframework.boot.CommandLineRunner;
@@ -382,7 +401,7 @@ Of course, after each case, **revert those changes**, to get "back to normal".
 Try again this time after adding a `@Primary` annotation on `ConsoleGreetingService`.
 3. Finally, try the following - what happens and why?
 
-[source, java, title="src/main/java/fr/emse/majeureinfo/springbootintro/hello/ConsoleGreetingService.java"]
+[source, java, title="ConsoleGreetingService.java"]
 ----
 package fr.emse.majeureinfo.springbootintro.hello;
 
@@ -428,6 +447,10 @@ public class CycleService {
 TIP: `@Primary` is not the only way to resolve multiple candidates, you can also use `@Qualifier`;
 check its javadoc to see how you could use it.
 
+Does Spring Framework stop with Dependency Injection? No.
+It builds on the core concept of Dependeny Injection but comes with a number of other features (Web, Persistence, etc.) which bring simple abstractions.
+Aim of these abstractions is to reduce Boilerplate Code and Duplication Code, promoting Loose Coupling of your application architecture.
+Let's the persistance support.
 
 [[persisting-entities-datastore]]
 == Persisting Entities to a database
@@ -442,9 +465,12 @@ The https://docs.oracle.com/javaee/7/tutorial/persistence-intro.htm#BNBPZ[Java P
 
 http://hibernate.org/orm/[Hibernate ORM] is the JPA implementation that we're going to use in this lab.
 
-Now create a `Light` Entity class that we will store a Light in our database.
+[[entity]]
+=== Entity
 
-[source, java, title="src/main/java/fr/emse/majeureinfo/springbootintro/model/Light.java"]
+Now create a `Light` Entity class (`src/main/java/fr/emse/majeureinfo/springbootintro/model/Light.java`) that we will store a Light in our database.
+
+[source, java, title="Light.java"]
 ----
 package fr.emse.majeureinfo.springbootintro.model;
 
@@ -509,9 +535,18 @@ public class Light {
 NOTE: This class is annotated with `@Column`, `@Entity` and `@Id`, which helps Spring Data to map
 Java objects to an actual database table : this is what we call the object-relational mapping (ORM).
 
-Then create the following `LightDao` interface (in a dedicated dao package)
 
-[source, java, title="src/main/java/fr/emse/majeureinfo/springbootintro/dao/LightDao.java"]
+[[dao]]
+=== Data Access Object (DAO)
+
+A DAO (Data Access Object) lets you persist your Entities.
+The DAO is basically an object or an interface that provides access to an underlying database or any other persistence storage.
+
+That definition from http://en.wikipedia.org/wiki/Data_access_object[Wikipedia]
+
+Create the following `LightDao` interface (in a dedicated dao package : `src/main/java/fr/emse/majeureinfo/springbootintro/dao/LightDao.java`)
+
+[source, java, title="LightDao.java"]
 ----
 package fr.emse.majeureinfo.springbootintro.dao;
 
@@ -529,7 +564,11 @@ Creating such an interface is enough! At runtime, Spring Data will create an imp
 that interface for you, and it will be available in the Spring context, so you can inject it in your application.
 This is a kind of magic!
 
-You can add the following dependencies to your `build.gradle` file:
+
+[[database]]
+=== Configure your database
+
+You must have the following dependencies to your `dependencies` section of your `build.gradle` file:
 
 [source, groovy]
 ----
@@ -537,7 +576,7 @@ compile('org.springframework.boot:spring-boot-starter-data-jpa')
 compile('com.h2database:h2')
 ----
 
-In the application.properties files, add the following property to enable the H2 console and configure the Datasource and the Database
+In the application.properties files, add the following properties to enable the H2 console and configure the Datasource and the Database
 
 [source, properties]
 ----
@@ -586,3 +625,323 @@ INSERT INTO LIGHT (LEVEL, STATUS) VALUES (2,'ON');
 ----
 
 Verify, using the h2 console on `http://localhost:8080/console/`, that this entry is in your database.
+
+[test-dao]]
+=== Create and Test your first DAO
+
+If your want to write your own DAO methods (for specific requests), you have to create custom interfaces and implementations with your custom methods.
+
+Create your own interface `LightDaoCustom`
+
+[source, java, title="LightDaoCustom"]
+----
+public interface LightDaoCustom {
+
+public List<Light> findOnLights();
+
+}
+----
+
+Refactor your `LightDAO` interface : it has to extend LightDaoCustom
+
+[source, java, title="LightDao"]
+----
+public interface LightDao extends JpaRepository<Light, Long>, LightDaoCustom {
+}
+----
+
+Following the TDD (https://en.wikipedia.org/wiki/Test-driven_development[Test Driven Development] approach, write your test for your `LightDaoCustom` component.
+We're going to use a dedicated library to test Dao : http://dbsetup.ninja-squad.com/[DBSetup] (open source).
+
+Add this to the `dependencies` section of your `build.gradle` file:
+
+[source, groovy]
+----
+testCompile 'com.ninja-squad:DbSetup:2.1.0'
+----
+
+and write your test, what you're expecting :
+
+[source, java, title="LightDaoCustomTest"]
+----
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@TestPropertySource("/test.properties")
+public class LightDaoCustomTest {
+
+    @Autowired
+    private LightDao lightDao;
+
+
+    @Qualifier("dataSource")
+    @Autowired
+    private DataSource dataSource;
+
+    protected static final DbSetupTracker TRACKER = new DbSetupTracker();
+
+    private static final Operation DELETE_ALL = DeleteAll.from("light");
+
+    protected void dbSetup(Operation operation) {
+        DbSetup setup = new DbSetup(new DataSourceDestination(dataSource),
+                Operations.sequenceOf(DELETE_ALL, operation));
+        TRACKER.launchIfNecessary(setup);
+    }
+
+    @Before
+    public void prepare() {
+        Operation light =
+                Insert.into("LIGHT")
+                        .withDefaultValue("status", Status.ON)
+                        .columns("id", "level")
+                        .values(1L, 22)
+                        .build();
+        dbSetup(light);
+    }
+
+    @Test
+    public void shouldFindOnLights() {
+        TRACKER.skipNextLaunch();
+        assertThat(lightDao.findOnLights()).hasSize(1);
+    }
+
+
+}
+----
+
+Create your own implementation of `LightDao` with your custom methods and inject the `EntityManager` (JPA)
+
+[source, java, title="LightDaoImpl"]
+----
+public class LightDaoImpl implements LightDaoCustom {
+    @PersistenceContext
+    private EntityManager em;
+
+    @Override
+    public List<Light> findOnLights() {
+        String jpql = "select lt from Light lt where lt.status = :value";
+        TypedQuery<Light> query = em.createQuery(jpql, Light.class);
+        return query.setParameter("value", Status.ON)
+                .getResultList();
+    }
+}
+----
+
+[[others-dao]]
+=== Continue to develop other Entities and DAO
+
+You have to test and develop :
+- Noise Entity (same attributes of Light)
+- Room Entity composes by 2 attributes : Light and Noise
+- NoiseDAO
+- RoomDAO
+
+For the Room Entity, be carefull to use the right Object-Relational Mapping :
+
+[source, java, title="extract of Room Entity"]
+----
+/**
+ * The Light of a room
+ */
+@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+private Light light;
+
+/**
+ * The Noise of a room
+ */
+@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+private Noise noise;
+----
+
+Add new values in your `import.sql` file, for example
+
+[source, sql, title="src/main/resources/import.sql"]
+----
+INSERT INTO LIGHT (ID, LEVEL, STATUS) VALUES (1, 20,'ON');
+INSERT INTO NOISE (ID, LEVEL, STATUS) VALUES (1, 30,'ON');
+INSERT INTO ROOM (ID, LIGHT_ID, NOISE_ID) VALUES (1, 1, 1);
+----
+
+[[web]]
+== Web Development
+
+https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html[Spring MVC] is the Web Framework built in Spring; it helps you write web applications and takes care of a lot of boilerplate code, so you just have to focus on your application features.
+
+
+=== Data Transfer Object (DTO)
+A DTO is an object that carries data between processes.
+Creating a Data Transfer Object for our web process lets you manage all the data for the HTTP requests.
+Data need to be serializable to go across the HTTP connection.
+It's often little more than a bunch of fields and the getters and setters for them.
+
+For example, here is the `LightDto` (put in a web package : `src/main/java/fr/emse/majeureinfo/springbootintro/web/LightDto.java`) :
+[source, java, title="LightDto.java"]
+----
+public class LightDto {
+
+    private final Long id;
+    private final Integer level;
+    private final Status status;
+
+    public LightDto(Light light) {
+        this.id = light.getId();
+        this.level = light.getLevel();
+        this.status = light.getStatus();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+}
+----
+
+With the same approach, write the `NoiseDTo` and the `RoomDto`.
+
+
+=== Simple Controller
+In Spring’s approach to building RESTful web services, HTTP requests are handled by a controller.
+Controllers are the link between the web http clients (browsers, mobiles) and your application; they should be lightweight and call other components in your application to perform actual work (DAO for example).
+These components are easily identified by the `@Controller` annotation.
+
+Now, create the following `RoomController` (in a dedicated web package : `src/main/java/fr/emse/majeureinfo/springbootintro/web/RoomController.java`)
+
+[source, java, title="RoomController.java"]
+----
+@RestController
+@RequestMapping(value = "/api/rooms")
+@Transactional
+public class RoomController {
+
+    private final RoomDao roomDao;
+
+
+    public RoomController(RoomDao roomDao) {
+        this.roomDao = roomDao;
+    }
+
+    @GetMapping
+    public List<RoomDto> list() {
+        return roomDao.findAll().stream().map(RoomDto::new).collect(Collectors.toList());
+    }
+
+}
+----
+
+This `RoomController` handles GET requests for `/api/rooms` by returning a list of `RoomDTO`. Tu do hat, it uses a service of our RoomDAO.
+
+
+=== your first view
+
+TIP: you have to active the Chrome extension _Allow-Control-Allow-Origin_ or the FireFox module _Cross Domain CORS_
+The error message in your browser should be :
+"XMLHttpRequest cannot load http://localhost:8080/api/rooms. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'null' is therefore not allowed acces"
+
+[[deployment-cloud]]
+== Deploy your app on a Cloud platform
+
+Heroku is a good Cloud platform for making server configurations easy and painless.
+You don't have to configure your own servers.
+
+Let's look at how we can deploy our application to Heroku. https://devcenter.heroku.com/articles/getting-started-with-gradle-on-heroku#introduction[Read the documentation].
+
+Your have to install the Heroku Command Line Interface (CLI), in order to use the `heroku` command from your command shell
+
+Add this elements to the section `dependencies` of your `build.gradle` :
+[source, java, title="build.gradle`"]
+----
+compile "com.heroku.sdk:heroku-jdbc:0.1.1"
+----
+
+Run this cmd :
+
+[source, shell]
+----
+heroku login
+----
+
+Enter your Heroku credentials and Run this cmd :
+
+[source, shell]
+----
+heroku create
+----
+
+You should have this in the console :
+
+[source, shell]
+----
+Creating app... done, ⬢ limitless-hamlet-31632
+https://limitless-hamlet-31632.herokuapp.com/ | https://git.heroku.com/limitless-hamlet-31632.git
+----
+
+This cmd creates an app on Heroku, which prepares Heroku to receive your source code.
+A Git remote (called heroku) is also created and associated with your local Git repository.
+Heroku generates a random name (in this case `limitless-hamlet-31632`) for your app, or you can pass a parameter to specify your own app name.
+
+Now deploy your code:
+
+[source, shell]
+----
+git push heroku master
+----
+
+The application is now deployed. Now launch one instance of the app :
+
+[source, shell]
+----
+heroku ps:scale web=1
+----
+
+Now visit the app at the URL generated by its app name (in this case `https://limitless-hamlet-31632.herokuapp.com/`)
+
+If you are lazy, you can open the website as follows:
+
+[source, shell]
+----
+heroku open
+----
+
+View information about your running app using one of the logging commands, heroku logs:
+
+[source, shell]
+----
+heroku logs --tail
+----
+(Press Control+C to stop streaming the logs)
+
+To stop your application, run :
+
+[source, shell]
+----
+heroku ps:scale web=0
+----
+
+or :
+
+[source, shell]
+----
+heroku stop web=0
+----
+
+
+The Gradle buildpack will run different build tasks depending on the frameworks it detects in your app.
+For Spring Boot, it will run `./gradlew build -x test`
+
+If no known web frameworks are detected, it will run `./gradlew stage (if you need to customize your build, you can create a stage task in your `build.gradle` file, we don't need this in our case).
+
+For Spring Boot, the Gradle buildpack will create too a web process type with the following command:
+
+[source, shell]
+----
+java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/*.jar
+----
+
+(If you need to customize or override the default web command, you must create a https://devcenter.heroku.com/articles/deploying-gradle-apps-on-heroku#the-procfile[Procfile]).
