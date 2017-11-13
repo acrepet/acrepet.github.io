@@ -439,9 +439,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#di-edge-cases">DI Edge cases</a></li>
 </ul>
 </li>
-<li><a href="#persisting-entities-datastore">Persisting Entities to a database</a>
+<li><a href="#persisting-entities">Persisting Entities to a database</a>
 <ul class="sectlevel2">
-<li><a href="#entity">Entity</a></li>
+<li><a href="#entity-lifecycle">Entity LifeCycle</a></li>
+<li><a href="#association-mappings">Association mappings</a></li>
+<li><a href="#fetching-strategy">Fetching Strategy</a></li>
 <li><a href="#dao">Data Access Object (DAO)</a></li>
 <li><a href="#database">Configure your database</a></li>
 <li><a href="#">Create and Test your first DAO</a></li>
@@ -1126,14 +1128,77 @@ Let&#8217;s the persistance support.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="persisting-entities-datastore"><a class="anchor" href="#persisting-entities-datastore"></a>Persisting Entities to a database</h2>
+<h2 id="persisting-entities"><a class="anchor" href="#persisting-entities"></a>Persisting Entities to a database</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Now we&#8217;d like to interact with a data store, for example a SQL database.
-We&#8217;re going to use <a href="https://projects.spring.io/spring-data-jpa/">Spring Data JPA</a> to store and retrieve data in a relational database, and "h2" as an in-memory database.</p>
+<p>What&#8217;s persistence in Java?</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a low level standard : <a href="https://en.wikipedia.org/wiki/Java_Database_Connectivity">JDBC</a> (Java Database Connectivity)</p>
+</li>
+<li>
+<p>an API, <a href="https://github.com/javaee/jpa-spec">JPA</a> (Java Persistence API) and frameworks as Hibernate</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>Do not confuse <a href="https://projects.spring.io/spring-data/">Spring Data</a> with <a href="https://projects.spring.io/spring-data-jpa/">Spring Data JPA</a>. We can read on in the offical doc that "Spring Data’s mission is to provide a familiar and consistent, Spring-based programming model for data access while still retaining the special traits of the underlying data store. It makes it easy to use data access technologies, relational and non-relational databases, map-reduce frameworks, and cloud-based data services. This is an umbrella project which contains many subprojects that are specific to a given database [&#8230;&#8203;]
+<p>With JDBC your code is linked to the database and could be harmful :</p>
+</div>
+<div class="listingblock">
+<div class="title">JDBC boilerplate</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">public void insertPerson(Person person) throws SQLException {
+   Connection conn = null;
+   PreparedStatement stmt = null;
+   try {
+      conn = dataSource.getConnection();
+      stmt = conn.prepareStatement("insert into person (" +
+	"id, firstName, lastName) values (?, ?, ?)");
+      stmt.setInt(0, person.getId().intValue());
+      stmt.setString(1, person.getFirstName());
+      stmt.setString(2, person.getLastName());
+      stmt.executeUpdate();
+   }
+   catch(SQLException e) {
+      LOGGER.error(e);
+   }
+   finally {
+      try { if (stmt != null) stmt.close(); }
+      catch(SQLException e) { LOGGER.warn(e); }
+
+      try { if (conn != null) conn.close(); }
+      catch(SQLException e) { LOGGER.warn(e); }
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With Persistence API/Framework, the approach is to :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>work with POJO &lt;&#8658; Plain Old Java Objects</p>
+</li>
+<li>
+<p>add annotations to map entity properties to table columns</p>
+</li>
+<li>
+<p>run database operations (Create, Update, Delete) in a simple way</p>
+</li>
+<li>
+<p>run get database requests (Read) managing POJO</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We&#8217;re going to use <a href="https://projects.spring.io/spring-data-jpa/">Spring Data JPA</a> to store and retrieve data in a relational database, and "h2" as an in-memory database.</p>
+</div>
+<div class="paragraph">
+<p>Do not confuse <a href="https://projects.spring.io/spring-data/">Spring Data</a> with <a href="https://projects.spring.io/spring-data-jpa/">Spring Data JPA</a>.
+We can read on in the offical doc that "Spring Data’s mission is to provide a familiar and consistent, Spring-based programming model for data access while still retaining the special traits of the underlying data store. It makes it easy to use data access technologies, relational and non-relational databases, map-reduce frameworks, and cloud-based data services. This is an umbrella project which contains many subprojects that are specific to a given database [&#8230;&#8203;]
 <a href="https://projects.spring.io/spring-data-jpa/">Spring Data JPA</a> is part of Spring Data, lets implement JPA based repositories. It makes it easier to build Spring-powered applications that use data access technologies."</p>
 </div>
 <div class="paragraph">
@@ -1142,8 +1207,6 @@ We&#8217;re going to use <a href="https://projects.spring.io/spring-data-jpa/">S
 <div class="paragraph">
 <p><a href="http://hibernate.org/orm/">Hibernate ORM</a> is the JPA implementation that we&#8217;re going to use in this lab.</p>
 </div>
-<div class="sect2">
-<h3 id="entity"><a class="anchor" href="#entity"></a>Entity</h3>
 <div class="paragraph">
 <p>Now create a <code>Light</code> Entity class (<code>src/main/java/fr/emse/majeureinfo/springbootintro/model/Light.java</code>) that we will store a Light in our database.</p>
 </div>
@@ -1157,22 +1220,22 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@Entity
+@Entity <i class="conum" data-value="1"></i><b>(1)</b>
 @SuppressWarnings("serial")
 public class Light {
 
   @Id
-  @GeneratedValue <i class="conum" data-value="1"></i><b>(1)</b>
+  @GeneratedValue <i class="conum" data-value="2"></i><b>(2)</b>
   private Long id;
 
   @Column(nullable = false)
-  private Integer level; <i class="conum" data-value="2"></i><b>(2)</b>
+  private Integer level; <i class="conum" data-value="3"></i><b>(3)</b>
 
   @Enumerated(EnumType.STRING)
-  private Status status; <i class="conum" data-value="3"></i><b>(3)</b>
+  private Status status; <i class="conum" data-value="4"></i><b>(4)</b>
 
   @SuppressWarnings("unused")
-  private Light() {
+  public Light() {
   }
 
   public Light(Integer level, Status status) {
@@ -1210,14 +1273,18 @@ public class Light {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>use a generated value for the ID (ex : an SQL sequence)</td>
+<td><code>@Entity</code> define this class a an entity managed by Hibernate</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>the level of the light</td>
+<td>use a generated value for the ID (ex : an SQL sequence)</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>the level of the light, mapped to column whcih will have the same name</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>the status (ON/OFF), you have to create an enum, Status, too</td>
 </tr>
 </table>
@@ -1234,6 +1301,148 @@ Java objects to an actual database table : this is what we call the object-relat
 </td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>An Entity :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>must have an empty constructor (public or protected).
+An empty constructor is needed to create a new instance via reflection (using <code>Class&lt;T&gt;.newInstance()</code>) by Hibernate which has to instantiate your Entity dynamically.
+If you don&#8217;t provide any additional constructors with arguments for the class, you don&#8217;t need to provide an empty constructor because you get one per default.
+Java always gives you a default invisible empty constructor.
+If an argument constructor is provided in your class, then jvm will not add the no-argument constructor.</p>
+</li>
+<li>
+<p>must be annotated by <code>@javax.persistence.Entity</code></p>
+</li>
+<li>
+<p>must have an ID (<code>@Id</code>). This ID is immutable (as the primary key in the database)</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="entity-lifecycle"><a class="anchor" href="#entity-lifecycle"></a>Entity LifeCycle</h3>
+<div class="paragraph">
+<p>The entities managed by Hibernate have a life-cycle associated with them.
+Either you can create a new object and save it into the database or your can fetch the data from the database.
+The Entities go through several stages in the life-cycle.
+The stages in the life cycle of an entity managed by Hibernate are as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Transient Objects</em>
+Transient objects are non transactional and in fact Hibernate has no knowledge of these objects</p>
+</li>
+<li>
+<p><em>Persistent Objects</em>
+Persistent entity has a valid database identity associated with.</p>
+</li>
+<li>
+<p><em>Removed Object</em>
+An object scheduled for deletion either by calling delete or because of orphan deletion of entities.</p>
+</li>
+<li>
+<p><em>Detached Object</em>
+The object in persistent state go into detached state after the persistent context is closed.
+Detached objects can be brought into other persistent context by reattachment or merging.
+Detached object still has a valid primary key attribute but it is no longer managed by Hibernate.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="http://asciidoctor.org/images/octocat.jpg" alt="GitHub mascot">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://www.roseindia.net/tutorialfiles/44253.HibernateLifeCycle.gif" alt="LifeCycle Entity">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="association-mappings"><a class="anchor" href="#association-mappings"></a>Association mappings</h3>
+<div class="paragraph">
+<p>Association mappings are one of the key features of JPA and Hibernate.
+They define the relationship between the database tables and the attributes in your Entity.</p>
+</div>
+<div class="paragraph">
+<p>You can use:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>one-to-one associations,</p>
+</li>
+<li>
+<p>many-to-one associations,</p>
+</li>
+<li>
+<p>many-to-many associations.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can map each of them as a uni- or bidirectional association.
+That means you can either model them as an attribute on only one of the associated entities or on both.
+That has no impact on your database mapping, but it defines in which direction you can use the relationship.</p>
+</div>
+<div class="paragraph">
+<p>Write the Room Entity composed by 2 attributes : Light and Noise.
+Use the right Object-Relational Mapping :</p>
+</div>
+<div class="listingblock">
+<div class="title">extract of Room Entity</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">/**
+ * The Light of a room
+ */
+@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+private Light light;
+
+/**
+ * The Noise of a room
+ */
+@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+private Noise noise;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fetching-strategy"><a class="anchor" href="#fetching-strategy"></a>Fetching Strategy</h3>
+<div class="paragraph">
+<p>First of all, read this <a href="https://vladmihalcea.com/2013/10/17/hibernate-facts-the-importance-of-fetch-strategy/">post</a></p>
+</div>
+<div class="paragraph">
+<p>If you load entities, some of them are loaded as proxies due to lazy loading.
+If you need later to send some of this objects to your front client via an HTTP request, it could a problem to keep these proxies returned by Hibernate, for the HTTP serialization.
+There are still error scenarios:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>1: out of the persistence layer, in presentation layer (for example in a a controller), an access to a lazy loaded attribute
+<code>room.getLight()</code>
+will end up with the famous <code>org.hibernate.LazyInitializationException</code> because the Hibernate Session is closed and this lazy attribute don’t have the session attached and can’t load their lazy references;</p>
+</li>
+<li>
+<p>2: more, in some case, your could have an error like in your controller if it&#8217;s transactional:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Javassist Exception</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">09:21:26 ERROR fr.emse.majeureinfo.project.web.MyController handleException handleReadDetails error
+java.lang.ClassCastException: fr.emse.majeureinfo.project.model.Room_$$_javassist_11 cannot be cast to fr.emse.majeureinfo.project.model.Room</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For obvious performance reasons, it is not advisable to turn off the lazy loading: if an object with lazy loaded attributes is manipulated in persistence layer: no problem, the proxy will load the lazy loaded attribute once its necessary; during its ask.
+If you have to serialize your object, you have to use DTO</p>
 </div>
 </div>
 <div class="sect2">
@@ -1488,34 +1697,12 @@ public class LightDaoCustomTest {
 <p>Noise Entity (same attributes of Light)</p>
 </li>
 <li>
-<p>Room Entity composes by 2 attributes : Light and Noise</p>
-</li>
-<li>
 <p>NoiseDAO</p>
 </li>
 <li>
 <p>RoomDAO</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>For the Room Entity, be carefull to use the right Object-Relational Mapping :</p>
-</div>
-<div class="listingblock">
-<div class="title">extract of Room Entity</div>
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">/**
- * The Light of a room
- */
-@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-private Light light;
-
-/**
- * The Noise of a room
- */
-@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-private Noise noise;</code></pre>
-</div>
 </div>
 <div class="paragraph">
 <p>Add new values in your <code>import.sql</code> file, for example</p>
@@ -1818,7 +2005,7 @@ For Spring Boot, it will run <code>./gradlew build -x test</code></p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-11-12 20:00:09 CET
+Last updated 2017-11-13 23:52:00 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
