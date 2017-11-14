@@ -458,6 +458,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#deployment-cloud">Deploy your app on a Cloud platform</a></li>
+<li><a href="#diy">Do It Yourself</a></li>
 </ul>
 </div>
 </div>
@@ -2005,10 +2006,52 @@ For Spring Boot, it will run <code>./gradlew build -x test</code></p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="diy"><a class="anchor" href="#diy"></a>Do It Yourself</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now, develop the following services in your <code>RoomController</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">RoomController</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">    ...
+    public RoomDto get(Long roomId) {
+            ...
+    }
+    ...
+    public RoomDto switchLight(Long roomId) {
+            ...
+    }
+    ...
+    public RoomDto switchRinger(Long roomId) {
+            ...
+    }
+    ...
+    public List&lt;RoomDto&gt; listWithOnLight() {
+            ...
+    }</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Be careful, these methods above don&#8217;t have any annotation, but you&#8217;ll certainly need them! You have to find the right ones!
+For the last service, your have to write a custom RoomDao method <code>findRoomsWithOnLight()</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-11-13 23:57:47 CET
+Last updated 2017-11-14 13:27:14 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
