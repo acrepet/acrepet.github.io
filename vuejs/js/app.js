@@ -14,13 +14,13 @@ const vm = new Vue({
         switchLight(room) {
             this.selectedRoom = room;
             let post_url = heroku_url_api + "/" + room.id + "/switch-light-and-list";
-            axios.post(post_url, {roomId: room.id})
+            axios.put(post_url, {roomId: room.id})
                 .then(response => {this.rooms = response.data});
             },
         switchRinger(room) {
             this.selectedRoom = room;
             let post_url = heroku_url_api + "/" + room.id + "/switch-ringer-and-list";
-            axios.post(post_url, {roomId: room.id})
+            axios.put(post_url, {roomId: room.id})
                 .then(response => {this.rooms = response.data});
         },
 
