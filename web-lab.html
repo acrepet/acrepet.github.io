@@ -438,6 +438,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#testing-dom">Testing the DOM API</a></li>
 </ul>
 </li>
+<li><a href="#ecosystem-js">JavaScript &amp; cie</a>
+<ul class="sectlevel2">
+<li><a href="#">Build JS tooling</a></li>
+<li><a href="#">Ajax &amp; JSON</a></li>
+<li><a href="#">JavaScript ecosystem</a></li>
+</ul>
+</li>
 <li><a href="#vuejs">Vue.Js</a>
 <ul class="sectlevel2">
 <li><a href="#intro">What is Vue.js?</a></li>
@@ -464,7 +471,8 @@ This course is based on this <a href="https://developer.mozilla.org/en-US/docs/W
 <div class="sectionbody">
 <div class="paragraph">
 <p>What is DOM? How it provides structure for HTML documents, how you can access it, and how this API presents the reference information and examples.
-The Document Object Model (DOM) is a programming interface for HTML documents. It represents the page so that programs can change the document structure, style and content. The DOM represents the document as nodes and objects. That way, programming languages can connect to the page and change it.
+The Document Object Model (DOM) is the data structure kept by the browser representing the webpage&#8217;s structure.
+DOM is a programming interface for HTML documents. It represents the page so that programs can change the document structure, style and content. The DOM represents the document as nodes and objects. That way, programming languages can connect to the page and change it.
 A Web page is a document.The Document Object Model (DOM) represents that same page you can manipulated. The DOM is an object-oriented representation of the web page, which can be modified with a scripting language such as JavaScript.</p>
 </div>
 <div class="paragraph">
@@ -627,6 +635,94 @@ window.scrollTo()</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="ecosystem-js"><a class="anchor" href="#ecosystem-js"></a>JavaScript &amp; cie</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3>Build JS tooling</h3>
+<div class="paragraph">
+<p>You can use several tools to automate your front-end builds.
+This allows for better code management, CI integration, and convenience.
+Tools examples : <a href="https://gruntjs.com/">Grunt</a>, <a href="https://bower.io/">Bower</a>, <a href="https://gulpjs.com/">Gulp</a>, <a href="https://webpack.js.org/">Webpack</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3>Ajax &amp; JSON</h3>
+<div class="paragraph">
+<p>Ajax = "Asynchronous JavaScript And XML".
+Ajax is a set of Web development techniques using many Web technologies on the client side to create asynchronous Web applications.
+You can send data to and retrieve from a server asynchronously (in the background) with Ajax.
+With Ajax, you dedicate a layer for the data interchange, distinct from the presentation layer.
+Ajax allows, with that, to change content dynamically <em>without the need to reload the entire page</em>.
+It was with the advent of Ajax in 1999 (standardised in 2006) that JavaScript started to grow.
+Before Ajax, JavaScript was mostly used to animate and provide interactivity to some webpages, without involve interchanging data with the server.
+With Ajax, JavaScript started to perform key tasks in our web-applications application-logic, to the point that nowadays it’s hard to find web-applications that do not require a JavaScript-enabled browser in order to work.
+It was after this change that the JavaScript ecosystem started to expand as a client-side programming language.
+Modern implementations commonly substitute JSON for XML due to the advantages of being native to JavaScript.</p>
+</div>
+<div class="paragraph">
+<p>JSON = "JavaScript Object Notation".</p>
+</div>
+<div class="paragraph">
+<p>JSON is a syntax for storing and exchanging data.
+JSON is text, written with JavaScript object notation.
+When exchanging data between a browser and a server, the data can only be text.
+JSON is text, and we can convert any JavaScript object into JSON, and send JSON to the server.
+We can also convert any JSON received from the server into JavaScript objects.
+This way we can work with the data as JavaScript objects, with no complicated parsing and translations.</p>
+</div>
+</div>
+<div class="sect2">
+<h3>JavaScript ecosystem</h3>
+<div class="paragraph">
+<p>The main needs of the developers working with AJAX web applications are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Performing Ajax calls</p>
+</li>
+<li>
+<p>Manipulating the DOM</p>
+</li>
+<li>
+<p>React to the user&#8217;s interactions</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The core JavaScript functions providing these features were not very practical to be used and sometimes their behaviour was not compatible with different browsers.
+The first libraries to become popular addressed precisely these three tasks, providing a collection of functions and objects that made these operations easy and functional on every browser.
+Some of these libraries would also provide plenty of other general-purpose functions.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>JQuery</p>
+</li>
+<li>
+<p>MVC-Like Frameworks : Angular, React, Vue</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>it’s increasingly popular not to use jQuery and to rather rely on either only the current core JavaScript functions or on libraries that are specialised in each specific task (e.g. fetch for AJAX calls).
+The jQuery framework was released in 2006 and has let the language core as it were and rather focused on providing plenty functionalities related with the DOM, events, asynchronicity and effects.
+One feature to highlight is that jQuery sports a plugin system that allows library programmers to extend its functionality.
+This library was the most successful library of this kind, being used nowadays in the majority of the websites.
+Despite jQuery’s immense popularity, as well as its ability to provide many useful functionalities, it’s important to notice that modern versions of JavaScript already provide many of the functionalities that made jQuery popular.</p>
+</div>
+<div class="paragraph">
+<p>While using DOM-Manipulation libraries it’s common to keep the application data in the DOM itself, thus there are DOM-Manipulation selector functions that have to be called when needing to access or modify this data.
+This kind of code is often filled with selector-names and easily becomes a mess as the application&#8217;s complexity evolves.
+There is a set of frameworks that allow us to address this problem in an elegant way by leveraging on application patterns that are similar to the famous Model-View-Controller (MVC) pattern.
+On the other hand, there is a recent trend in which web-applications are fully loaded in the browser on the first page-load, performing every subsequent operations via Ajax.
+This kind of applications is called <em>Single-Page Application (SPA)</em> and, as their code is often quite elaborate and complex, it’s recommendable to pick one of these frameworks, like Angular, when implementing a SPA.
+You can read a good comparison of Angular, React and Vue <a href="https://medium.com/unicorn-supplies/angular-vs-react-vs-vue-a-2017-comparison-c5c52d620176">here</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="vuejs"><a class="anchor" href="#vuejs"></a>Vue.Js</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -709,7 +805,7 @@ promise.then(successCallback, failureCallback);</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-11-14 22:58:42 CET
+Last updated 2017-11-29 00:01:22 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
