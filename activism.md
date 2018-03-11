@@ -12,4 +12,4 @@ I co-run [Duchess France ](http://www.duchess-france.org/) since 2010. This asso
 
 - my interview of [Claire Fougerouse](http://www.duchess-france.org/jai-teste-qbits-spintronique-japon/#more-9281) about qubits and spintronics
 
-MiXiT
+I co-founded [MiXiT](https://mixitconf.org) conference, which is a beautiful story began in 2011, 2 days, each year, for discovering new things and meeting nice people. Our commitment is to offer a variety of topics, technologies and also attendees diversity. Xe want this conference to be more than an IT conference gathering our whole ecosystem: we want it to be accessible (notably by its price), to open it towards broader subjects than our daily routines, with speakers from outside of the field (our aliens).
