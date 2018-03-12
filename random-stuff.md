@@ -3,7 +3,8 @@ layout: default
 title: Random Stuff
 permalink: /random/
 ---
-xxx
+Currently I'm setting up a new side project :  <a href="{{ "/nkotc" | prepend: site.baseurl }}">NKOTC</a>
+<!--
 https://thehumaninthemachine.com/agnes-crepet/2017-october-31
 
 ninja Squad:
@@ -21,3 +22,4 @@ ninja Squad:
 avataria
 
 numero zero
+-->
