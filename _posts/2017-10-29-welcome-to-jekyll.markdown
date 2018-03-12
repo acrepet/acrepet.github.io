@@ -6,10 +6,10 @@ categories: general
 ---
 You’ll find in this blog :
 
-- [my teaching materials](/teaching-materials),
+- [my teaching materials](/teaching),
 
-- [my tech activism productions](/tech-activism),
+- [my tech activism productions](/activism),
 
-- [random stuffs](/random-stuffs) that I do!
+- [random stuffs](/random) that I do!
 
 ...mainly in English, but sometimes in French when I'm too lazy!
