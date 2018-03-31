@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Welcome to my blog!"
+title:  "What it is all about with this blog?"
 date:   2017-10-29 17:08:39 +0100
 categories: general
 ---

@@ -17,7 +17,7 @@ url: "http://localhost:4000" # the base hostname & protocol for your site http:/
 twitter_username: https://twitter.com/agnes_crepet
 github_username:  https://github.com/acrepet
 linkedin_username: https://www.linkedin.com/in/agnescrepet
-copyright: "Copyright &copy; Agnès CREPET 2017"
+copyright: "Copyright &copy; Agnès CREPET 2018"
 
 # Build settings
 markdown: kramdown
