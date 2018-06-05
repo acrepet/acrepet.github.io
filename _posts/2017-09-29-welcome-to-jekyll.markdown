@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "What it is all about with this blog?"
-date:   2017-10-29 17:08:39 +0100
+date:   2017-09-29 17:08:39 +0100
 categories: general
 ---
 You’ll find in this blog :
