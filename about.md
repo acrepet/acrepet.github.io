@@ -1,6 +1,6 @@
 ---
 layout: default
-title: About
+title: About Agnès Crepet
 permalink: /about/
 ---
 
