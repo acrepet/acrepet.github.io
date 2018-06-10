@@ -10,8 +10,6 @@ I am a passionate Tech activist with over [**17 years of software engineering ex
 
 Since 2015, my work time has been split between my own IT company, [Ninja Squad](http://ninja-squad.com/), and a position in a French engineering School, [Mines Saint-Etienne](http://www.mines-stetienne.fr). Beside that, I’m actively involved in [**non-profit collectives and Tech communities**](/activism/).
 
-I want to put my skills to use in Tech projects which have a true and **significative positive impact on the world**. I favor career choices that make IT a great tool to help people and serve projects with **societal and environmental impacts**. I feel that working in Software means you're constantly thinking critically with an **ethical stance**.
-
 I'm the head of Learning innovation Department at the French engineering School [Mines Saint-Etienne](http://www.mines-stetienne.fr). I lead a team of 6 people who build ingenious pedagogical tools and encourage innovation and change in the learning environment.
 
 The IT company I co-founded in France, [Ninja Squad](http://ninja-squad.com/), is well-known for its core values. We apply a **cooperative management**, we **support open source**, we do sometimes [voluntary development](https://blog.ninja-squad.com/2018/05/10/globe42/) (the last one is for a migrant health center) and [our technical books about Angular](https://books.ninja-squad.com/angular) are sold under a “Pay what you want” mode, supporting non-profit organizations like [Electronic Frontier Foundation](https://www.eff.org/).
@@ -19,5 +17,3 @@ The IT company I co-founded in France, [Ninja Squad](http://ninja-squad.com/), i
 I like knowledge sharing too: beside [my courses on Computer Sciences and Agile methodologies](/teaching),I **talk** about technical or non-technical topics at several IT events (Devoxx France, JFokus, several Meetups, …).
 
 Want to chat? Feel free to <a href="{{site.twitter_username}}" target="_blank">ping me</a> on Twitter (my Direct Messages are open).
-
-<p align="center"><img src="/img/moi.jpg" align="middle" alt="Agnes CREPET" width="100%"></p>
