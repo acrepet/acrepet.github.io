@@ -10,6 +10,6 @@ You’ll find in this blog :
 
 - [my tech activism productions](/activism),
 
-- [random stuffs](/random) that I do!
+- [posts](/posts) on random stuff I Find funny, interesting and/or inspiring, and on which somehow or other I involved in!
 
 ...mainly in English, but sometimes in French when I'm too lazy!

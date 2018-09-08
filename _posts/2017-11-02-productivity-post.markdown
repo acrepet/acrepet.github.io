@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Don't say that you don't have enough time!"
-date:   2017-10-29 17:08:39 +0100
+date:   2017-11-02 17:08:39 +0100
 categories: general
 ---
 [Alex Duloz](https://twitter.com/alexduloz) sent me an email last August, he asked me if I could be interested in writing an article about productivity.
